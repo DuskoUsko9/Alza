@@ -119,7 +119,7 @@ app.UseSwaggerUI(options =>
         options.SwaggerEndpoint(url, name);
     }
     
-    options.DocumentTitle = "Alza E-Shop API Documentation";
+    options.DocumentTitle = "Alza API Documentation";
 });
 
 // Global exception handling middleware
