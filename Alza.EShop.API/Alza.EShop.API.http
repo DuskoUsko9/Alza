@@ -1,0 +1,6 @@
+@Alza.EShop.API_HostAddress = http://localhost:5079
+
+GET {{Alza.EShop.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
