@@ -4,6 +4,7 @@ using Alza.EShop.Application.DTOs.Responses;
 using Alza.EShop.Application.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Alza.EShop.API.Controllers.V2;
 
@@ -20,12 +21,11 @@ namespace Alza.EShop.API.Controllers.V2;
 [Route("api/v{version:apiVersion}/products")]
 [ApiVersion("2.0")]
 [Produces("application/json")]
+[EnableRateLimiting("fixed")]
 public class ProductsController(
-    IProductService productService,
-    IValidator<CreateProductRequest> createValidator) : ControllerBase
+    IProductService productService) : ControllerBase
 {
     private readonly IProductService _productService = productService;
-    private readonly IValidator<CreateProductRequest> _createValidator = createValidator;
 
     /// <summary>
     /// Gets a paginated list of products.

@@ -3,37 +3,32 @@ using Alza.EShop.Application.DTOs.Responses;
 using Alza.EShop.Application.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Alza.EShop.API.Controllers.V1;
 
 /// <summary>
 /// Controller for product management operations (Version 1).
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the ProductsController class.
+/// </remarks>
+/// <param name="productService">The product service.</param>
+/// <param name="createValidator">The create product request validator.</param>
+/// <param name="updateStockValidator">The update stock request validator.</param>
 [ApiController]
 [Route("api/v{version:apiVersion}/products")]
 [ApiVersion("1.0")]
 [Produces("application/json")]
-public class ProductsController : ControllerBase
+[EnableRateLimiting("fixed")]
+public class ProductsController(
+    IProductService productService,
+    IValidator<CreateProductRequest> createValidator,
+    IValidator<UpdateStockRequest> updateStockValidator) : ControllerBase
 {
-    private readonly IProductService _productService;
-    private readonly IValidator<CreateProductRequest> _createValidator;
-    private readonly IValidator<UpdateStockRequest> _updateStockValidator;
-
-    /// <summary>
-    /// Initializes a new instance of the ProductsController class.
-    /// </summary>
-    /// <param name="productService">The product service.</param>
-    /// <param name="createValidator">The create product request validator.</param>
-    /// <param name="updateStockValidator">The update stock request validator.</param>
-    public ProductsController(
-        IProductService productService,
-        IValidator<CreateProductRequest> createValidator,
-        IValidator<UpdateStockRequest> updateStockValidator)
-    {
-        _productService = productService;
-        _createValidator = createValidator;
-        _updateStockValidator = updateStockValidator;
-    }
+    private readonly IProductService _productService = productService;
+    private readonly IValidator<CreateProductRequest> _createValidator = createValidator;
+    private readonly IValidator<UpdateStockRequest> _updateStockValidator = updateStockValidator;
 
     /// <summary>
     /// Gets list of all products.

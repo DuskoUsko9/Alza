@@ -10,10 +10,12 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,7 @@ builder.Services.AddApiVersioning(options =>
 // Add API Explorer for automatic Swagger version discovery
 builder.Services.AddVersionedApiExplorer(options =>
 {
-    options.GroupNameFormat = "'v'VVV";  // Format: v1, v2, v3
+    options.GroupNameFormat = "'v'VVV";  // Format: v1, v2
     options.SubstituteApiVersionInUrl = true;  // Replace {version:apiVersion} in routes
 });
 
@@ -84,6 +86,27 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Rate Limiting configuration - 10 calls per minute
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("fixed", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 10;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync(
+            "{\"error\":\"Too many requests. You can make a maximum of 10 calls per minute. Please try again later.\"}",
+            token);
+    };
+});
+
 var app = builder.Build();
 
 // Apply migrations and seed database
@@ -132,6 +155,9 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+// Enable rate limiting
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

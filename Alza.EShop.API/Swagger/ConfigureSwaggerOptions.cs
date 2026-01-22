@@ -25,7 +25,7 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : 
     {
         var info = new OpenApiInfo()
         {
-            Title = "Alza Product Management API",
+            Title = "Alza Case Study API",
             Version = description.ApiVersion.ToString(),
             Description = GetDescriptionForVersion(description.ApiVersion.MajorVersion ?? 1)
         };
@@ -43,10 +43,9 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : 
         return majorVersion switch
         {
             1 => "REST API for product management with basic CRUD operations. " +
-                 "Supports creating products, retrieving all products or by ID, and updating stock quantities synchronously.",
-            2 => "Enhanced REST API for product management with pagination support for efficient product listing. " +
-                 "Includes all v1 features plus paginated product listing.",
-            _ => "Alza API"
+                 "Supports creating product, retrieving all products or by ID, and updating stock quantity.",
+            2 => "Enhanced REST API for product management with pagination support for efficient product listing.",
+            _ => "Alza Case Study API"
         };
     }
 }
