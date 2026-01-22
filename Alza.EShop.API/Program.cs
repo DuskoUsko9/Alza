@@ -52,8 +52,12 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
-// Database configuration - Using Azure SQL Server
+// Database configuration - Using Azure SQL Server 
+if (builder.Environment.IsDevelopment())
+    builder.Configuration.AddUserSecrets<Program>();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<EShopDbContext>(options =>
     options.UseSqlServer(connectionString));
 
