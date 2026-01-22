@@ -75,7 +75,7 @@ public class ProductService : IProductService
     {
         var product = _mapper.Map<Product>(request);
         product.Id = Guid.NewGuid();
-        product.CreatedAt = DateTime.UtcNow;
+        product.CreatedAt = DateTimeOffset.UtcNow;
 
         var created = await _repository.CreateAsync(product);
         return _mapper.Map<ProductResponse>(created);
@@ -92,7 +92,7 @@ public class ProductService : IProductService
         }
 
         product.StockQuantity = request.StockQuantity;
-        product.UpdatedAt = DateTime.UtcNow;
+        product.UpdatedAt = DateTimeOffset.UtcNow;
 
         var updated = await _repository.UpdateAsync(product);
         return _mapper.Map<ProductResponse>(updated);

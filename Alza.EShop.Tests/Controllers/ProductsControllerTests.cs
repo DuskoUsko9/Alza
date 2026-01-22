@@ -127,7 +127,7 @@ public class ProductsControllerTests
             Price = request.Price,
             Description = request.Description,
             StockQuantity = request.StockQuantity,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow
         };
 
         _createValidatorMock.Setup(v => v.ValidateAsync(request, default))

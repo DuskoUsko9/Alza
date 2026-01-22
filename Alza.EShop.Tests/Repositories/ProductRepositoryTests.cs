@@ -99,8 +99,8 @@ public class ProductRepositoryTests
         result.Should().NotBeNull();
         result.Id.Should().Be(newProduct.Id);
         result.Name.Should().Be(newProduct.Name);
-        result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
-        result.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        result.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        result.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
 
         // Verify it was saved to database
         var savedProduct = await repository.GetByIdAsync(newProduct.Id);
@@ -130,7 +130,7 @@ public class ProductRepositoryTests
         result.Name.Should().Be("Updated Product Name");
         result.Price.Should().Be(299.99m);
         result.StockQuantity.Should().Be(100);
-        result.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        result.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
 
         // Verify changes were saved
         var updatedProduct = await repository.GetByIdAsync(productId);

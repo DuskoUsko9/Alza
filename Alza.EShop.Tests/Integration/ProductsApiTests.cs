@@ -189,7 +189,7 @@ public class ProductsApiTests : IClassFixture<WebApplicationFactory<Program>>
         product.Description.Should().Be(request.Description);
         product.StockQuantity.Should().Be(request.StockQuantity);
         product.Id.Should().NotBe(Guid.Empty);
-        product.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
+        product.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromMinutes(1));
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class ProductsApiTests : IClassFixture<WebApplicationFactory<Program>>
         updatedProduct.Should().NotBeNull();
         updatedProduct!.StockQuantity.Should().Be(150);
         updatedProduct.UpdatedAt.Should().NotBeNull();
-        updatedProduct.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
+        updatedProduct.UpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromMinutes(1));
     }
 
     [Fact]
