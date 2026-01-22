@@ -50,14 +50,17 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             ValidationException validationEx => new ApiErrorResponse
             {
                 StatusCode = (int)HttpStatusCode.BadRequest,
-                Message = "One or more validation errors occurred",
+                Message = validationEx.Message,
                 Errors = validationEx.Errors
             },
-            _ => new ApiErrorResponse
+            _ => new ApiErrorResponse  // DEFAULT
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
-                Message = "An error occurred while processing your request",
-                Errors = null
+                Message = "An unexpected error occurred",
+                Errors = new Dictionary<string, string[]>
+                {
+                    { "IntervalServerError", new[] { exception.Message } }
+                }
             }
         };
 

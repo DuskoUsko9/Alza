@@ -19,7 +19,7 @@ public class PaginationParameters
     public int PageSize
     {
         get => _pageSize;
-        set => _pageSize = value > MaxPageSizeValue ? MaxPageSizeValue : value;
+        set => _pageSize = value;
     }
 
     /// <summary>

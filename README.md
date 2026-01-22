@@ -36,6 +36,7 @@ Application should listen on localhost:
 
 ```cmd
 http://localhost:5079
+https://localhost:7090
 ```
 
 The application automatically applies migrations on startup, but you can manually run them:

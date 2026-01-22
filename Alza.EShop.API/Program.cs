@@ -68,7 +68,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 // AutoMapper registration
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddAutoMapper(typeof(Alza.EShop.Application.Mappings.MappingProfile).Assembly);
 
 // FluentValidation registration
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
