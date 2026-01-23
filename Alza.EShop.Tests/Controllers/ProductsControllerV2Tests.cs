@@ -1,8 +1,6 @@
 using Alza.EShop.Application.Common.Models;
-using Alza.EShop.Application.DTOs.Requests;
 using Alza.EShop.Application.DTOs.Responses;
 using Alza.EShop.Application.Services.Interfaces;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -14,17 +12,14 @@ namespace Alza.EShop.Tests.Controllers;
 public class ProductsControllerV2Tests
 {
     private readonly Mock<IProductService> _mockProductService;
-    private readonly Mock<IValidator<CreateProductRequest>> _mockCreateValidator;
     private readonly API.Controllers.V2.ProductsController _controller;
 
     public ProductsControllerV2Tests()
     {
         _mockProductService = new Mock<IProductService>();
-        _mockCreateValidator = new Mock<IValidator<CreateProductRequest>>();
 
         _controller = new API.Controllers.V2.ProductsController(
-            _mockProductService.Object,
-            _mockCreateValidator.Object);
+            _mockProductService.Object);
     }
 
     [Fact]

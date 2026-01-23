@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,17 +41,8 @@ builder.Services.AddVersionedApiExplorer(options =>
 // Add a transient service to configure Swagger options
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
-// Swagger configuration with XML documentation
-builder.Services.AddSwaggerGen(options =>
-{
-    // Enable XML documentation
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        options.IncludeXmlComments(xmlPath);
-    }
-});
+// Add Swagger generation services
+builder.Services.AddSwaggerGen();
 
 // Database configuration - Using Azure SQL Server 
 if (builder.Environment.IsDevelopment())
