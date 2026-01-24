@@ -16,7 +16,6 @@ namespace Alza.EShop.API.Controllers.V2;
 /// Initializes a new instance of the ProductsController class.
 /// </remarks>
 /// <param name="productService">The product service.</param>
-/// <param name="createValidator">The create product request validator.</param>
 [ApiController]
 [Route("api/v{version:apiVersion}/products")]
 [ApiVersion("2.0")]
