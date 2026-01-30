@@ -45,4 +45,11 @@ public interface IProductService
     /// <returns>The updated product.</returns>
     /// <exception cref="Common.Exceptions.NotFoundException">Thrown when the product is not found.</exception>
     Task<ProductResponse> UpdateStockAsync(Guid id, UpdateStockRequest request);
+
+    /// <summary>
+    /// Deletes a product by its identifier.
+    /// </summary>
+    /// <param name="id">The product identifier.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteAsync(Guid id);
 }

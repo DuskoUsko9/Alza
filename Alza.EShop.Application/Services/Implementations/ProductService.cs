@@ -12,23 +12,17 @@ namespace Alza.EShop.Application.Services.Implementations;
 /// <summary>
 /// Service implementation for product operations.
 /// </summary>
-public class ProductService : IProductService
+/// <remarks>
+/// Initializes a new instance of the ProductService class.
+/// </remarks>
+/// <param name="repository">The product repository.</param>
+/// <param name="mapper">The AutoMapper instance.</param>
+public class ProductService(
+    IProductRepository repository,
+    IMapper mapper) : IProductService
 {
-    private readonly IProductRepository _repository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Initializes a new instance of the ProductService class.
-    /// </summary>
-    /// <param name="repository">The product repository.</param>
-    /// <param name="mapper">The AutoMapper instance.</param>
-    public ProductService(
-        IProductRepository repository,
-        IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
+    private readonly IProductRepository _repository = repository;
+    private readonly IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public async Task<IEnumerable<ProductResponse>> GetAllAsync()
@@ -60,13 +54,7 @@ public class ProductService : IProductService
     /// <inheritdoc/>
     public async Task<ProductResponse> GetByIdAsync(Guid id)
     {
-        var product = await _repository.GetByIdAsync(id);
-        
-        if (product == null)
-        {
-            throw new NotFoundException("Product", id);
-        }
-
+        var product = await _repository.GetByIdAsync(id) ?? throw new NotFoundException("Product", id);
         return _mapper.Map<ProductResponse>(product);
     }
 
@@ -84,17 +72,18 @@ public class ProductService : IProductService
     /// <inheritdoc/>
     public async Task<ProductResponse> UpdateStockAsync(Guid id, UpdateStockRequest request)
     {
-        var product = await _repository.GetByIdAsync(id);
-        
-        if (product == null)
-        {
-            throw new NotFoundException("Product", id);
-        }
-
+        var product = await _repository.GetByIdAsync(id) ?? throw new NotFoundException("Product", id);
         product.StockQuantity = request.StockQuantity;
         product.UpdatedAt = DateTimeOffset.UtcNow;
 
         var updated = await _repository.UpdateAsync(product);
         return _mapper.Map<ProductResponse>(updated);
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(Guid id)
+    {
+        _ = await _repository.GetByIdAsync(id) ?? throw new NotFoundException("Product", id);
+        await _repository.DeleteAsync(id);
     }
 }

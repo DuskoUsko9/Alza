@@ -295,4 +295,40 @@ public class ProductsControllerTests
     }
 
     #endregion
+
+    #region Delete Tests
+
+    [Fact]
+    public async Task Delete_WhenProductExists_ReturnsNoContent()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+        _serviceMock.Setup(s => s.DeleteAsync(productId))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.Delete(productId);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+        _serviceMock.Verify(s => s.DeleteAsync(productId), Times.Once);
+    }
+
+    [Fact]
+    public async Task Delete_WhenProductDoesNotExist_ThrowsNotFoundException()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+        _serviceMock.Setup(s => s.DeleteAsync(nonExistentId))
+            .ThrowsAsync(new NotFoundException("Product", nonExistentId));
+
+        // Act
+        Func<Task> act = async () => await _controller.Delete(nonExistentId);
+
+        // Assert
+        await act.Should().ThrowAsync<NotFoundException>();
+        _serviceMock.Verify(s => s.DeleteAsync(nonExistentId), Times.Once);
+    }
+
+    #endregion
 }

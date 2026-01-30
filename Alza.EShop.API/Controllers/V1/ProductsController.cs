@@ -125,4 +125,25 @@ public class ProductsController(
         var product = await _productService.UpdateStockAsync(id, request);
         return Ok(product);
     }
+
+    /// <summary>
+    /// Deletes a product by its identifier.
+    /// </summary>
+    /// <param name="id">The product identifier.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <response code="204">Indicates that the product was successfully deleted.</response>
+    /// <response code="404">If the product is not found.</response>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     DELETE /api/v1/products/{id}
+    /// </remarks>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _productService.DeleteAsync(id);
+        return NoContent();
+    }
 }
