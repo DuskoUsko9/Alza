@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Svadobný zoznam úloh</title>
+<style>
+  :root {
+    --sage-50: #f4f7f4;
+    --sage-100: #e6ede6;
+    --sage-200: #cfdccf;
+    --sage-300: #b0c5b0;
+    --sage-400: #8fae8f;
+    --sage-500: #7a9c7e;
+    --sage-600: #62815f;
+    --sage-700: #4f684e;
+    --sage-800: #3f5240;
+    --sage-900: #34433675;
+    --cream: #faf9f4;
+    --text-dark: #2f3a2f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Verdana, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--sage-100), var(--cream));
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1 {
+    color: var(--sage-800);
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    color: var(--sage-600);
+    font-size: 1rem;
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  button:active { transform: scale(0.97); }
+
+  .btn-add {
+    background: var(--sage-600);
+    color: white;
+  }
+  .btn-add:hover { background: var(--sage-700); }
+
+  .btn-clear {
+    background: var(--sage-100);
+    color: var(--sage-700);
+    border: 1px solid var(--sage-300);
+  }
+  .btn-clear:hover { background: var(--sage-200); }
+
+  .table-container {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(79, 104, 78, 0.15);
+    border: 1px solid var(--sage-200);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: var(--sage-600);
+  }
+
+  thead th {
+    color: white;
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+  }
+
+  thead th:last-child {
+    width: 60px;
+    text-align: center;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--sage-100);
+    transition: background 0.15s ease;
+  }
+
+  tbody tr:hover {
+    background: var(--sage-50);
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  td {
+    padding: 0;
+    vertical-align: top;
+  }
+
+  td[contenteditable="true"] {
+    padding: 12px 16px;
+    outline: none;
+    min-width: 80px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+  }
+
+  td[contenteditable="true"]:focus {
+    background: var(--sage-50);
+    box-shadow: inset 0 0 0 2px var(--sage-300);
+  }
+
+  td[contenteditable="true"]:empty::before {
+    content: attr(data-placeholder);
+    color: #a3b3a3;
+    font-style: italic;
+  }
+
+  td.col-kedy { min-width: 130px; }
+  td.col-poznamka { min-width: 220px; }
+
+  .delete-cell {
+    text-align: center;
+  }
+
+  .delete-btn {
+    background: transparent;
+    color: var(--sage-500);
+    font-size: 1.2rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+
+  .delete-btn:hover {
+    background: #f3d9d9;
+    color: #a33d3d;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--sage-500);
+    font-style: italic;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--sage-500);
+    font-size: 0.85rem;
+  }
+
+  .saved-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--sage-600);
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .saved-indicator.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>💍 Svadobný zoznam úloh</h1>
+    <div class="subtitle">Čo ešte treba vybaviť kvôli svadbe</div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn-add" id="addRowBtn">+ Pridať úlohu</button>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span class="saved-indicator" id="savedIndicator">✓ Uložené</span>
+      <button class="btn-clear" id="clearAllBtn">Vymazať všetko</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table id="taskTable">
+      <thead>
+        <tr>
+          <th>Kto</th>
+          <th>Kedy</th>
+          <th>Čo</th>
+          <th>Poznámka</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="taskBody">
+      </tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      Zatiaľ žiadne úlohy. Klikni na „Pridať úlohu“ a začni plánovať 🌿
+    </div>
+  </div>
+
+  <footer>Dáta sa ukladajú automaticky v tomto prehliadači, kým ich ručne nezmažeš.</footer>
+</div>
+
+<script>
+  const STORAGE_KEY = 'wedding-checklist-data';
+  const tableBody = document.getElementById('taskBody');
+  const emptyState = document.getElementById('emptyState');
+  const savedIndicator = document.getElementById('savedIndicator');
+
+  function loadTasks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveTasks() {
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+    const tasks = rows.map(row => {
+      const cells = row.querySelectorAll('td[contenteditable]');
+      return {
+        kto: cells[0].innerText.trim(),
+        kedy: cells[1].innerText.trim(),
+        co: cells[2].innerText.trim(),
+        poznamka: cells[3].innerText.trim()
+      };
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    flashSaved();
+    toggleEmptyState();
+  }
+
+  let flashTimeout;
+  function flashSaved() {
+    savedIndicator.classList.add('show');
+    clearTimeout(flashTimeout);
+    flashTimeout = setTimeout(() => savedIndicator.classList.remove('show'), 1200);
+  }
+
+  function toggleEmptyState() {
+    emptyState.style.display = tableBody.children.length === 0 ? 'block' : 'none';
+  }
+
+  function createRow(task) {
+    task = task || { kto: '', kedy: '', co: '', poznamka: '' };
+    const tr = document.createElement('tr');
+
+    const fields = [
+      { key: 'kto', placeholder: 'napr. Janka', className: '' },
+      { key: 'kedy', placeholder: 'napr. do 15.9.', className: 'col-kedy' },
+      { key: 'co', placeholder: 'napr. objednať kvety', className: '' },
+      { key: 'poznamka', placeholder: 'poznámka...', className: 'col-poznamka' }
+    ];
+
+    fields.forEach(f => {
+      const td = document.createElement('td');
+      td.contentEditable = 'true';
+      td.className = f.className;
+      td.dataset.placeholder = f.placeholder;
+      td.innerText = task[f.key] || '';
+      td.addEventListener('input', saveTasks);
+      td.addEventListener('blur', saveTasks);
+      tr.appendChild(td);
+    });
+
+    const delTd = document.createElement('td');
+    delTd.className = 'delete-cell';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.innerHTML = '✕';
+    delBtn.title = 'Vymazať riadok';
+    delBtn.addEventListener('click', () => {
+      tr.remove();
+      saveTasks();
+    });
+    delTd.appendChild(delBtn);
+    tr.appendChild(delTd);
+
+    return tr;
+  }
+
+  function addRow(task) {
+    const row = createRow(task);
+    tableBody.appendChild(row);
+    toggleEmptyState();
+    return row;
+  }
+
+  document.getElementById('addRowBtn').addEventListener('click', () => {
+    const row = addRow();
+    saveTasks();
+    const firstCell = row.querySelector('td[contenteditable]');
+    firstCell.focus();
+  });
+
+  document.getElementById('clearAllBtn').addEventListener('click', () => {
+    if (tableBody.children.length === 0) return;
+    if (confirm('Naozaj chceš vymazať všetky úlohy? Táto akcia sa nedá vrátiť späť.')) {
+      tableBody.innerHTML = '';
+      saveTasks();
+    }
+  });
+
+  // Init
+  const existingTasks = loadTasks();
+  if (existingTasks.length > 0) {
+    existingTasks.forEach(t => addRow(t));
+  } else {
+    addRow();
+  }
+  toggleEmptyState();
+</script>
+</body>
+</html>
